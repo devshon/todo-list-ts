@@ -20,7 +20,7 @@
       "version": "detect"
     }
   },
-  "ignorePatterns": ["node_modules/", ".next/*"],
+  "ignorePatterns": ["node_modules/", ".next/*", "*.json"],
   "rules": {
     "react/react-in-jsx-scope": 0,
     "react/prefer-stateless-function": 0,

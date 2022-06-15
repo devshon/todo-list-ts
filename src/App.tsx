@@ -1,8 +1,8 @@
-import { Reset } from "styled-reset";
 import { SWRConfig } from "swr";
 
-import Todo from "./components/Todo";
+import Main from "./components/Main";
 
+import { Reset } from "styled-reset";
 import GlobalStyle from "./styles/GlobalStyle";
 
 const App = () => {
@@ -15,7 +15,7 @@ const App = () => {
           suspense: true,
         }}
       >
-        <Todo />
+        <Main />
       </SWRConfig>
     </>
   );

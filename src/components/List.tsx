@@ -1,13 +1,11 @@
+import React, { useState } from "react";
 import useSWR, { useSWRConfig } from "swr";
 import { fetcher } from "../apis/fetcher";
 import { putTodo } from "../apis/todo";
 import { initialTodo, Todo } from "../share/const";
 
-// import Progress from "./Progress";
-// import Completed from "./Completed";
-
 import styled from "styled-components";
-import { useState } from "react";
+import Item from "./Item";
 
 const List = () => {
   const { data } = useSWR<{ todos: Todo[] }>("/todo", fetcher);
@@ -30,7 +28,7 @@ const List = () => {
     setUseItem(item);
   }
 
-  function dragOver(e: any) {
+  function dragOver(e: React.DragEvent<HTMLDivElement>) {
     e.preventDefault();
   }
 
@@ -70,56 +68,64 @@ const List = () => {
   }
 
   return (
-    <Main>
+    <Section>
       <div className={`progress-wrapper ${activeSection === 1 ? "active-section" : ""}`}>
         <h1>Progress</h1>
-        {progressData.map((item: Todo) => {
-          return (
-            <div key={item.id} className="item-wrapper">
-              <div
-                className={`item ${activeId === item.id ? "active" : ""}`}
-                id={String(item.id)}
-                onDragStart={() => dragStart(item)}
-                onDragOver={(e) => dragOver(e)}
-                onDragEnter={() => dragEnter(item)}
-                onDragEnd={() => dragEnd()}
-                onDrop={() => drop(item)}
-                draggable="true"
-                dangerouslySetInnerHTML={{
-                  __html: item.description,
-                }}
-              />
-            </div>
-          );
-        })}
+        {progressData.length > 0 ? (
+          <Item
+            data={progressData}
+            activeId={activeId}
+            dragStart={dragStart}
+            dragOver={dragOver}
+            dragEnter={dragEnter}
+            dragEnd={dragEnd}
+            drop={drop}
+          />
+        ) : (
+          <div className="item-wrapper">
+            <div
+              className={`item`}
+              onDragStart={() => dragStart(initialTodo)}
+              onDragOver={(e) => dragOver(e)}
+              onDragEnd={() => dragEnd()}
+              onDrop={() => drop({ ...initialTodo, isCompleted: false })}
+              onDragEnter={() => dragEnter({ ...initialTodo, isCompleted: false })}
+              dangerouslySetInnerHTML={{ __html: "empty todo" }}
+            />
+          </div>
+        )}
       </div>
       <div className={`completed-wrapper ${activeSection === 2 ? "active-section" : ""}`}>
         <h1>Completed</h1>
-        {completedData.map((item: Todo) => {
-          return (
-            <div key={item.id} className="item-wrapper">
-              <div
-                className={`item ${activeId === item.id ? "active" : ""}`}
-                id={String(item.id)}
-                onDragStart={() => dragStart(item)}
-                onDragOver={(e) => dragOver(e)}
-                onDragEnter={() => dragEnter(item)}
-                onDragEnd={() => dragEnd()}
-                onDrop={() => drop(item)}
-                draggable="true"
-                dangerouslySetInnerHTML={{
-                  __html: item.description,
-                }}
-              />
-            </div>
-          );
-        })}
+        {completedData.length > 0 ? (
+          <Item
+            data={completedData}
+            activeId={activeId}
+            dragStart={dragStart}
+            dragOver={dragOver}
+            dragEnter={dragEnter}
+            dragEnd={dragEnd}
+            drop={drop}
+          />
+        ) : (
+          <div className="item-wrapper">
+            <div
+              className={`item`}
+              onDragStart={() => dragStart(initialTodo)}
+              onDragOver={(e) => dragOver(e)}
+              onDragEnd={() => dragEnd()}
+              onDrop={() => drop({ ...initialTodo, isCompleted: true })}
+              onDragEnter={() => dragEnter({ ...initialTodo, isCompleted: true })}
+              dangerouslySetInnerHTML={{ __html: "empty todo" }}
+            />
+          </div>
+        )}
       </div>
-    </Main>
+    </Section>
   );
 };
 
-const Main = styled.section`
+const Section = styled.section`
   display: flex;
   flex-direction: row;
   .progress-wrapper,

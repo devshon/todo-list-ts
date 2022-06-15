@@ -1,7 +1,6 @@
 import { useState } from "react";
 import { useSWRConfig } from "swr";
 import { postTodo } from "../apis/todo";
-
 import ReactQuill from "react-quill";
 
 import styled from "styled-components";
@@ -29,7 +28,7 @@ const Editor = () => {
   }
 
   return (
-    <Main>
+    <Section>
       <div className="editor-wrapper">
         <ReactQuill
           className="editor"
@@ -46,11 +45,11 @@ const Editor = () => {
           <button>등록</button>
         </div>
       </div>
-    </Main>
+    </Section>
   );
 };
 
-const Main = styled.section`
+const Section = styled.section`
   .editor-wrapper {
     display: flex;
     .editor {

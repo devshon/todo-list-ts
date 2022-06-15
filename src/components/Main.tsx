@@ -1,20 +1,22 @@
 import { Suspense } from "react";
-import styled from "styled-components";
+
 import Editor from "./Editor";
 import List from "./List";
 
-const Todo = () => {
+import styled from "styled-components";
+
+const Main = () => {
   return (
     <Suspense fallback={<h1>loading...</h1>}>
-      <Main>
+      <_Main>
         <Editor />
         <List />
-      </Main>
+      </_Main>
     </Suspense>
   );
 };
 
-const Main = styled.main`
+const _Main = styled.main`
   display: flex;
   flex-direction: column;
   section {
@@ -22,4 +24,4 @@ const Main = styled.main`
   }
 `;
 
-export default Todo;
+export default Main;

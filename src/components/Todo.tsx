@@ -1,18 +1,14 @@
-import { FC, Suspense } from "react";
+import { Suspense } from "react";
 import styled from "styled-components";
 import Editor from "./Editor";
 import List from "./List";
 
-const Todo: FC = () => {
+const Todo = () => {
   return (
     <Suspense fallback={<h1>loading...</h1>}>
       <Main>
-        <section>
-          <Editor />
-        </section>
-        <section>
-          <List />
-        </section>
+        <Editor />
+        <List />
       </Main>
     </Suspense>
   );

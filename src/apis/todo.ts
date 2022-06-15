@@ -13,7 +13,7 @@ export async function postTodo(description: string) {
   }).then((res) => res.json());
 }
 
-export async function putTodoByDrop(todo: Todo) {
+export async function putTodo(todo: Todo) {
   return fetch(`${SERVER_URL}/todo`, {
     method: "PUT",
     headers: {

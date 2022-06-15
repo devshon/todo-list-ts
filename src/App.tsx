@@ -1,4 +1,3 @@
-import { FC } from "react";
 import { Reset } from "styled-reset";
 import { SWRConfig } from "swr";
 
@@ -6,7 +5,7 @@ import Todo from "./components/Todo";
 
 import GlobalStyle from "./styles/GlobalStyle";
 
-const App: FC = () => {
+const App = () => {
   return (
     <>
       <GlobalStyle />

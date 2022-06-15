@@ -1,122 +1,150 @@
-import React, { FC, useState } from "react";
 import useSWR, { useSWRConfig } from "swr";
 import { fetcher } from "../apis/fetcher";
-import { putTodoByDrop } from "../apis/todo";
+import { putTodo } from "../apis/todo";
 import { initialTodo, Todo } from "../share/const";
 
-import styled from "styled-components";
+// import Progress from "./Progress";
+// import Completed from "./Completed";
 
-const List: FC = () => {
-  const { data, error } = useSWR("/todo", fetcher);
+import styled from "styled-components";
+import { useState } from "react";
+
+const List = () => {
+  const { data } = useSWR<{ todos: Todo[] }>("/todo", fetcher);
   const { mutate } = useSWRConfig();
   const [useItem, setUseItem] = useState(initialTodo);
+  const [activeId, setActiveId] = useState(0);
+  const [activeSection, setActiveSection] = useState(0);
+  const progressData: Todo[] = [];
+  const completedData: Todo[] = [];
+
+  data?.todos.forEach((item) => {
+    if (item.isCompleted) {
+      completedData.push(item);
+    } else {
+      progressData.push(item);
+    }
+  });
 
   function dragStart(item: Todo) {
     setUseItem(item);
   }
 
   function dragOver(e: any) {
-    e.preventDefault(useItem);
+    e.preventDefault();
   }
 
-  function dragEnter(e: any) {
-    if (e.target.className === "drop") {
-      e.target.className = "drop active";
-    }
-    if (e.target.className === "drop-bottom") {
-      e.target.className = "drop-bottom active";
-    }
-  }
-
-  function dragLeave(e: any) {
-    if (e.target.className === "drop active") {
-      e.target.className = "drop";
-    }
-    if (e.target.className === "drop-bottom active") {
-      e.target.className = "drop-bottom";
-    }
-  }
-
-  function drop(e: any, dropItem: Todo) {
-    if (e.target.className === "drop active") {
-      e.target.className = "drop";
-      onUpdate(e.target.className, dropItem);
-    }
-    if (e.target.className === "drop-bottom active") {
-      e.target.className = "drop-bottom";
-      onUpdate(e.target.className, dropItem);
-    }
-  }
-
-  function onUpdate(type: string, dropItem: Todo) {
-    const item = useItem;
-
-    if (item.order === dropItem.order || item.order === dropItem.order + 1) {
-      return;
-    }
-    if (item.order < dropItem.order) {
-      item.order = dropItem.order;
-      dropItem.order = item.order;
-    }
-    if (item.order > dropItem.order) {
-      if (type === "drop-bottom") {
-        item.order = dropItem.order;
-        dropItem.order = item.order;
+  function dragEnter(item: Todo) {
+    if (useItem.isCompleted !== item.isCompleted) {
+      setActiveId(0);
+      if (useItem.isCompleted) {
+        setActiveSection(1);
       } else {
-        item.order = dropItem.order + 1;
-        dropItem.order = item.order - 1;
+        setActiveSection(2);
       }
+    } else {
+      setActiveSection(0);
+      setActiveId(item.id);
     }
-    putTodoByDrop(item);
-    putTodoByDrop(dropItem).then(() => mutate("/todo"));
+  }
+
+  function dragEnd() {
+    setActiveId(0);
+    setActiveSection(0);
+  }
+
+  function drop(item: Todo) {
+    setActiveId(0);
+    setActiveSection(0);
+    onUpdate(item);
+  }
+
+  function onUpdate(item: Todo): void {
+    if (useItem.isCompleted !== item.isCompleted) {
+      putTodo({ ...useItem, isCompleted: !useItem.isCompleted }).then(() => mutate("/todo"));
+    } else {
+      putTodo({ ...useItem, order: item.order }).then(() => {
+        putTodo({ ...item, order: useItem.order }).then(() => mutate("/todo"));
+      });
+    }
   }
 
   return (
     <Main>
-      {data.todos.map((item: Todo, index: string) => {
-        console.log(item);
-        return (
-          <div
-            key={item.id}
-            id={String(item.id)}
-            className="item-wrapper"
-            onDragStart={() => dragStart(item)}
-            onDragOver={dragOver}
-            onDragEnter={dragEnter}
-            onDragLeave={dragLeave}
-            onDrop={(e) => drop(e, item)}
-            draggable="true"
-          >
-            <div className="drop" />
-            <div className="item" dangerouslySetInnerHTML={{ __html: item.description }} />
-            {index + 1 === data.todos.length && <div className="drop-bottom" />}
-          </div>
-        );
-      })}
+      <div className={`progress-wrapper ${activeSection === 1 ? "active-section" : ""}`}>
+        <h1>Progress</h1>
+        {progressData.map((item: Todo) => {
+          return (
+            <div key={item.id} className="item-wrapper">
+              <div
+                className={`item ${activeId === item.id ? "active" : ""}`}
+                id={String(item.id)}
+                onDragStart={() => dragStart(item)}
+                onDragOver={(e) => dragOver(e)}
+                onDragEnter={() => dragEnter(item)}
+                onDragEnd={() => dragEnd()}
+                onDrop={() => drop(item)}
+                draggable="true"
+                dangerouslySetInnerHTML={{
+                  __html: item.description,
+                }}
+              />
+            </div>
+          );
+        })}
+      </div>
+      <div className={`completed-wrapper ${activeSection === 2 ? "active-section" : ""}`}>
+        <h1>Completed</h1>
+        {completedData.map((item: Todo) => {
+          return (
+            <div key={item.id} className="item-wrapper">
+              <div
+                className={`item ${activeId === item.id ? "active" : ""}`}
+                id={String(item.id)}
+                onDragStart={() => dragStart(item)}
+                onDragOver={(e) => dragOver(e)}
+                onDragEnter={() => dragEnter(item)}
+                onDragEnd={() => dragEnd()}
+                onDrop={() => drop(item)}
+                draggable="true"
+                dangerouslySetInnerHTML={{
+                  __html: item.description,
+                }}
+              />
+            </div>
+          );
+        })}
+      </div>
     </Main>
   );
 };
 
-const Main = styled.div`
+const Main = styled.section`
   display: flex;
-  flex-direction: column;
-  .item-wrapper {
-    height: 100px;
-    display: flex;
-    flex-direction: column;
-    cursor: pointer;
-    .drop,
-    .drop-bottom {
-      width: 100%;
-      height: 10px;
+  flex-direction: row;
+  .progress-wrapper,
+  .completed-wrapper {
+    flex: 1;
+    border: 1px solid black;
+    .item-wrapper {
+      height: 100px;
+      display: flex;
+      flex-direction: column;
+      :not(:last-child) {
+        margin-bottom: 10px;
+      }
+      .item {
+        flex: 1;
+        background-color: #dddd;
+        cursor: pointer;
+      }
+      .active {
+        background-color: red;
+      }
     }
-    .item {
-      flex: 1;
-      background-color: #dddd;
-    }
-    .active {
-      background-color: red;
-    }
+  }
+  .active-section {
+    background-color: red;
   }
 `;
 

@@ -9,8 +9,8 @@ import "react-quill/dist/quill.snow.css";
 
 const Editor = () => {
   const { mutate } = useSWRConfig();
-
   const [useHtml, setUseHtml] = useState("");
+
   function onChange(html: string, length: number) {
     if (length < 100) {
       setUseHtml(html);
@@ -53,6 +53,9 @@ const Editor = () => {
 const Main = styled.section`
   .editor-wrapper {
     display: flex;
+    .editor {
+      flex: 2;
+    }
     .btn-wrapper {
       flex: 1;
       button {

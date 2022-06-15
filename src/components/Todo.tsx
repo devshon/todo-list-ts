@@ -16,6 +16,7 @@ const Todo = () => {
 
 const Main = styled.main`
   display: flex;
+  flex-direction: column;
   section {
     flex: 1;
   }

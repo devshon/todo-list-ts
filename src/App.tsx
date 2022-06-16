@@ -1,6 +1,6 @@
 import { SWRConfig } from "swr";
 
-import Main from "./components/Main";
+import Todo from "./components/Todo";
 
 import { Reset } from "styled-reset";
 import GlobalStyle from "./styles/GlobalStyle";
@@ -15,7 +15,7 @@ const App = () => {
           suspense: true,
         }}
       >
-        <Main />
+        <Todo />
       </SWRConfig>
     </>
   );

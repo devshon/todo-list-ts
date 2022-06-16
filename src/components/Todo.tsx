@@ -5,18 +5,18 @@ import List from "./List";
 
 import styled from "styled-components";
 
-const Main = () => {
+const Todo = () => {
   return (
     <Suspense fallback={<h1>loading...</h1>}>
-      <_Main>
+      <Main>
         <Editor />
         <List />
-      </_Main>
+      </Main>
     </Suspense>
   );
 };
 
-const _Main = styled.main`
+const Main = styled.main`
   display: flex;
   flex-direction: column;
   section {
@@ -24,4 +24,4 @@ const _Main = styled.main`
   }
 `;
 
-export default Main;
+export default Todo;

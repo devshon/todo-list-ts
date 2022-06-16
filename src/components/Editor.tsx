@@ -24,7 +24,7 @@ const Editor = () => {
   }
 
   function onCreate() {
-    postTodo(useHtml).then(() => mutate("/todo"));
+    postTodo(useHtml).then(() => mutate("/todo/progress"));
   }
 
   return (

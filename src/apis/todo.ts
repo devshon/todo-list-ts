@@ -24,3 +24,15 @@ export async function putTodo(todo: Todo) {
     }),
   });
 }
+
+export async function getProgressTodos() {
+  return fetch(`${SERVER_URL}/todo/progress`, {
+    method: "GET",
+  });
+}
+
+export async function getCompletedTodos() {
+  return fetch(`${SERVER_URL}/todo/completed`, {
+    method: "GET",
+  });
+}
